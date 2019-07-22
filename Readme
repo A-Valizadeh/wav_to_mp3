@@ -1,0 +1,117 @@
+
+This project converts wav audio files to mp3 ones. This is a portable project that was implemented in 
+C++ programming language and was compiled and tested with std=C++14. The executable code of the project,
+gets a path to wav files and generates mp3 files at the same location. Non wav files are ignored. If the
+there is any files with the same name as wav files but with mp3 extention, the mp3 file is updated. 
+
+.........................................................................................................
+
+To compile and use this project, your system requirements are:
+1) OS: Linux or Cygwin on Windows
+2) g++
+3) make
+4) cmake
+5) mp3lame wav to mp3 library
+6) pthread library
+
+.........................................................................................................
+
+To use this project, run the follownig instructions in order on Linux shell or in Cygwin on Windows:
+1) cmake CMakeLists.txt ----> this command does everything and generates Makefile for Linux or Windows
+2) make            -----> this command compiles the code and generates executable code named "wav_to_mp3"
+3) ./wav_to_mp3 pathToWavFiles
+
+.........................................................................................................
+
+The project is composed of four classes:
+1) Converter
+2) Wav_to_mp3_worker
+3) Wav_queue
+4) WavFileHandler
+
+/**
+ *
+ *  The Converter class is the most impotrant class for converting wav files to mp3 project.
+ *  class methods: 
+ *               (1) Converter(): constructor
+ *               (2) Converter(string path): constructor which set the path for wav files
+ *               (3) void set_verbose(int in_verbose):This method is set a member variable by which
+ *                                                     we can get more printed result
+ *               (4) void cpp_version(): This method prints the C++ standard version. 
+ *                                       In this projet C++14 was used.
+ *               (5) void set_path(string in_path): A method to set the path for wav files
+ *               (6) int get_core_number(): This method returns number of cores available in the system
+ *               (7) bool converting(): This method is the main routin for the conversion.
+ *                       In this method, number of cores is got at first.
+ *                       (the number of cores is computed by actual number of cores multiplied by a
+ *                        factor: N*factor. This is done for reducing the wait times of the cores for 
+ *                        io operations)
+ *                       Then the wav files list is produced and inserted to the queue. 
+ *                       After that, N*factor objects from class "Wav_to_mp3_worker" which is named
+ *                       "Workers"is inastaced and their start() method is called to do the actual 
+ *                       wav to mp3 conversion task.
+ *                       At the end, the converting() method from "Converter" class, waits for all
+ *                       workers to be finished.
+ *
+ */
+
+
+/**
+ *
+ *  The Wav_to_mp3_worker class implements the actual conversion task from wav to mp3.
+ *  class methods: 
+ *               (1) Wav_to_mp3_worker(Wav_queue* in_queue, int in_id, string in_path): constructor
+ *               (2) string convert_name(string wav): This method converts file extention from "Wav",
+ *                               "wav" or "WAV" to "mp3" and returns the whole mp3 file name as a result.
+ *               (3) void set_queue(Wav_queue* queue): By this method the queue of files which was made,
+ *                                 is put inside of a member variable of type "Wav_queue" (queue class).
+ *               (4) void start(): This method Starts a thread for converting one wav file to mp3.
+ *                                  the callback funtion for thread is named working() which is another
+ *                                  methods of this class (Wav_to_mp3_worker).
+ *               (5) void wait_to_finish(): This method does a thread joining task and waits for the
+ *                                  started thread in the start() method to be ended.
+ *               (6) static void working(Wav_to_mp3_worker* obj): This method gets a file from the
+ *                                  wav queue and does some checks and after that calles a function
+ *                                  named "converting" which is a method of this class
+ *                                  (Wav_to_mp3_worker) too.
+ *               (7) void converting(string wav, string mp3): This method is the most important function
+ *                                   to this project because it actually uses lame library and converts
+ *                                   one wav file to mp3.
+ *                                  
+ *
+ */
+
+
+/**
+ *
+ *  This Wav_queue class implements a queue for keeping wav file list.
+ *  class methods: 
+ *               (1) void fill(vector<string> in_items): This method is used to insert files to the queue
+ *               (2) string pop(): This method is used to delete files from queue
+ *               (3) size_t size(): Returns the size of queue
+ *
+ */
+
+
+/**
+ *
+ *  This WavFileHandler class implements all things neceessary for 
+ *                              working with wav files in this project.
+ *  class methods: 
+ *               (1) WavFileHandler(): constructor
+ *               (2) bool parseWavFile(const char *fileName): This method is the most important function
+ *                              in this class that parses inputed wav file and checks its validity. 
+ *                              This method calls other methods of the "WavFileHandler" class to does
+ *                              its task. This method uses checkHeader(), getFileSize() and printHeader()
+ *               (3) bool checkHeader(FILE *f): This method checks wav file header validity.
+ *               (4) int32_t getFileSize(FILE *f): This method return size of wav file.
+ *               (5) wavHdrSt getWavHeader(): This method returns header structure of 
+ *
+ */
+
+
+
+
+
+
+
