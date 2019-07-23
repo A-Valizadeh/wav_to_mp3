@@ -1,8 +1,21 @@
 
 This project converts wav audio files to mp3 ones. This is a portable project that was implemented in 
 C++ programming language and was compiled and tested with std=C++14. The executable code of the project,
-gets a path to wav files and generates mp3 files at the same location. Non wav files are ignored. If the
+gets a path to wav files and generates mp3 files at the same location. Non wav files are ignored. If 
 there is any files with the same name as wav files but with mp3 extention, the mp3 file is updated. 
+The project was tested on Ubuntu Linux and on Cygwin on Windows.
+
+The main idea of the project is: 
+We have multiple cores and many files to convert from wav to mp3. 
+To reduce waiting times of the cores during io operations, the number of cores always set greater than real counts 
+(in our code: coreCounts = 2*realCoreCounts).
+We keep the list of files to be converted in a queue(fifo). 
+For every core we start a thread. 
+In each thread, the core pops a file from the queue in a mutexted way and starts to converting it. After finishing 
+the conversion task, the core pops another file from queue and does the task for it. this process is repeated for 
+every cores untill the queue is empted completly and we have nothing to do in the thread. then we ended the thread.
+The program is terminated after termination of all the threads.
+
 
 .........................................................................................................
 
